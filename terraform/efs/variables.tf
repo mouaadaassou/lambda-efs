@@ -1,36 +1,40 @@
 variable "efs_name" {
-  type = string
+  type        = string
   description = "the name of the EFS"
 }
 
 variable "transition_to_ia" {
-  type = string
+  type        = string
   description = "Indicates how long it takes to move files to IA storage class"
 }
 
 variable "performance_mode" {
-  type = string
+  type        = string
   description = "The file system performance mode"
-  default = "generalPurpose"
+  default     = "generalPurpose"
 }
 
 variable "throughput_mode" {
-  type = string
+  type        = string
   description = "Throughput mode for the file system"
-  default = "bursting"
+  default     = "bursting"
 }
 
 variable "encrypted" {
-  type = bool
+  type        = bool
   description = "If true, the disk will be encrypted"
-  default = false
+  default     = false
 }
 
 variable "subnets" {
-  type = map(string)
+  type        = map(string)
   description = "map of AZ with associated CIDR block"
 }
 
 variable "vpc_id" {
   default = "The VPC ids already provisioned for EFS"
+}
+
+variable "efs_access_point_name" {
+  default = "EFS access point name"
 }

@@ -12,10 +12,33 @@ resource "aws_efs_file_system" "efs" {
   }
 }
 
-resource "aws_efs_mount_target" "efs_mount_target" {
-  for_each = toset(data.aws_subnets.subnets.ids)
+resource "aws_efs_access_point" "efs_access_point" {
   file_system_id = aws_efs_file_system.efs.id
-  subnet_id = each.key
+
+  root_directory {
+    path = "/lambda"
+
+    creation_info {
+      owner_gid   = 1001
+      owner_uid   = 1001
+      permissions = "0755"
+    }
+  }
+  posix_user {
+    # default ec2-user
+    gid = 1001
+    uid = 1001
+  }
+
+  tags = {
+    Name = var.efs_access_point_name
+  }
+}
+
+resource "aws_efs_mount_target" "efs_mount_target" {
+  for_each        = toset(data.aws_subnets.subnets.ids)
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = each.key
   security_groups = [aws_security_group.efs_security_group.id]
 }
 
@@ -28,20 +51,20 @@ resource "aws_security_group" "efs_security_group" {
 }
 
 resource "aws_security_group_rule" "efs_ingress_security_group_rule" {
-  type = "ingress"
-  from_port = 2049
-  to_port = 2049
-  protocol = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  type              = "ingress"
+  from_port         = 2049
+  to_port           = 2049
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.efs_security_group.id
 }
 
 resource "aws_security_group_rule" "efs_egress_security_group_rule" {
-  type = "egress"
-  from_port = 2049
-  to_port = 2049
-  protocol = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  type              = "egress"
+  from_port         = 2049
+  to_port           = 2049
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.efs_security_group.id
 }
 
