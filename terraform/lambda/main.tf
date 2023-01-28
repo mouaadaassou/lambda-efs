@@ -1,0 +1,3 @@
+# TODO; create a lambda function that will write to EFS
+#  and later, create an SQS that will be read messages by Lambda and write to EFS
+#  with purpose, to explore concurrency config for Lambda...
