@@ -1,5 +1,5 @@
 variable "vpc_name" {
-  type = string
+  type        = string
   description = "The name of the VPC to provision"
 }
 
@@ -8,18 +8,18 @@ variable "vpc_cidr_block" {
 }
 
 variable "instance_tenancy" {
-  type = string
+  type        = string
   description = "A tenancy option for instances launched into the VPC"
-  default = "default"
+  default     = "default"
 }
 
 variable "enable_dsn_hostname" {
-  type = bool
+  type        = bool
   description = "A boolean flag to enable/disable DNS hostnames in the VPC"
-  default = false
+  default     = false
 }
 
 variable "subnets_cidr" {
-  type = map(string)
+  type        = map(string)
   description = "Map of subnet AZ associated with CIDR block"
 }

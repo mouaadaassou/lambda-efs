@@ -1,3 +1,10 @@
+# TODO;
+#  points to check:
+#   1. lambda timeout config.
+#   2. add loggings for lambda function. - DONE
+#   3. add monitoring to lambda.
+#   4. add alerts on SQS and lambda execution errors
+#   5. check X-Ray.
 data "archive_file" "efs-file-creator" {
   source_file = "${path.module}/code/lambda.py"
   output_path = "lambda.py.zip"
@@ -25,6 +32,14 @@ resource "aws_security_group" "lambda_security_group" {
     to_port     = 2049
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_lambda_event_source_mapping" "lambda_event_source_mapping" {
+  count                              = length(var.sqs_queues_arn)
+  function_name                      = aws_lambda_function.lambda_function.function_name
+  event_source_arn                   = var.sqs_queues_arn[count.index]
+  maximum_batching_window_in_seconds = var.lambda_maximum_batching_window_in_seconds
+  batch_size                         = var.lambda_batch_size
 }
 
 resource "aws_lambda_function" "lambda_function" {

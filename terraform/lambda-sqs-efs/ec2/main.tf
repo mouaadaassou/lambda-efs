@@ -14,7 +14,7 @@ resource "aws_instance" "ec2_instance" {
 
 resource "aws_internet_gateway" "ec2_internet_gateway" {
   vpc_id = var.vpc_id
-  tags   = {
+  tags = {
     Name = var.ig_name
   }
 }

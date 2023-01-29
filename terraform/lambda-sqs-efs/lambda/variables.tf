@@ -3,6 +3,10 @@ variable "lambda_function_name" {
   description = "Lambda function name"
 }
 
+variable "sqs_queues_arn" {
+  type = list(string)
+}
+
 variable "lambda_role_name" {
   type        = string
   description = "Role name associated with the Lambda function"
@@ -54,4 +58,15 @@ variable "lambda_vpc_id" {
 
 variable "subnet_ids" {
   description = "Subnet IDS"
+}
+
+variable "cloudwatch_log_group_arn" {
+  description = "Cloudwatch log group arn associated with the lambda function"
+}
+
+variable "lambda_batch_size" {
+  default = 200
+}
+variable "lambda_maximum_batching_window_in_seconds" {
+  default = 10
 }
