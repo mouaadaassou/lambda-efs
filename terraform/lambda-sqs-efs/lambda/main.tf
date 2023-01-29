@@ -4,16 +4,9 @@ data "archive_file" "efs-file-creator" {
   type        = "zip"
 }
 
-data "aws_subnets" "subnets" {
-  filter {
-    name   = "vpc-id"
-    values = [var.lambda_vpc_id]
-  }
-}
-
 data "aws_subnet" "subnet" {
-  for_each = toset(data.aws_subnets.subnets.ids)
-  id       = each.value
+  count = length(var.subnet_ids)
+  id    = var.subnet_ids[count.index]
 }
 
 resource "aws_security_group" "lambda_security_group" {
@@ -60,13 +53,13 @@ resource "aws_lambda_function" "lambda_function" {
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_function_role_policy_attachment" {
-  role = aws_iam_role.lambda_function_role.name
+  role       = aws_iam_role.lambda_function_role.name
   policy_arn = aws_iam_policy.lambda_function_managed_role.arn
 }
 
 resource "aws_iam_role" "lambda_function_role" {
-  name                = var.lambda_role_name
-  assume_role_policy  = data.aws_iam_policy_document.lambda_function_assume_role_policy_document.json
+  name               = var.lambda_role_name
+  assume_role_policy = data.aws_iam_policy_document.lambda_function_assume_role_policy_document.json
 }
 
 resource "aws_iam_policy" "lambda_function_managed_role" {
@@ -93,7 +86,7 @@ data "aws_iam_policy_document" "lambda_function_efs_access_policy_document" {
     iterator = statement
     content {
       effect    = statement.value.effect
-      actions    = statement.value.actions
+      actions   = statement.value.actions
       resources = statement.value.resources
     }
   }

@@ -36,9 +36,9 @@ resource "aws_efs_access_point" "efs_access_point" {
 }
 
 resource "aws_efs_mount_target" "efs_mount_target" {
-  for_each        = toset(data.aws_subnets.subnets.ids)
+  count           = length(var.subnet_ids)
   file_system_id  = aws_efs_file_system.efs.id
-  subnet_id       = each.key
+  subnet_id       = var.subnet_ids[count.index]
   security_groups = [aws_security_group.efs_security_group.id]
 }
 
@@ -66,11 +66,4 @@ resource "aws_security_group_rule" "efs_egress_security_group_rule" {
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.efs_security_group.id
-}
-
-data "aws_subnets" "subnets" {
-  filter {
-    name   = "vpc-id"
-    values = [var.vpc_id]
-  }
 }

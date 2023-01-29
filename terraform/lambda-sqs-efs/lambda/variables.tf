@@ -51,3 +51,7 @@ variable "lambda_vpc_id" {
   type        = string
   description = "Lambda VPC id"
 }
+
+variable "subnet_ids" {
+  description = "Subnet IDS"
+}

@@ -16,7 +16,6 @@ module "vpc_module" {
 }
 
 module "efs_module" {
-  depends_on            = [module.vpc_module.vpc_id]
   source                = "./efs"
   efs_name              = "efs_lambda"
   transition_to_ia      = "AFTER_7_DAYS"
@@ -24,6 +23,7 @@ module "efs_module" {
   throughput_mode       = "bursting"
   encrypted             = false
   vpc_id                = module.vpc_module.vpc_id
+  subnet_ids            = module.vpc_module.subnet_ids
   efs_access_point_name = "efs_access_point_for_lambda"
 
   subnets = tomap({
@@ -34,7 +34,6 @@ module "efs_module" {
 }
 
 module "ec2_module" {
-  depends_on                      = [module.vpc_module.vpc_id]
   source                          = "./ec2"
   efs_dns_name                    = module.efs_module.efs_dns_name
   ssh_key_name                    = "new-cloud-guru-labs"
@@ -42,14 +41,15 @@ module "ec2_module" {
   ec2_instance_type               = "t2.micro"
   ig_name                         = "ec2-ig"
   ec2_associate_public_ip_address = true
+  subnet_ids                      = module.vpc_module.subnet_ids
   vpc_id                          = module.vpc_module.vpc_id
 }
 
 module "lambda_module" {
-  depends_on                                = [module.vpc_module.vpc_id]
   lambda_vpc_id                             = module.vpc_module.vpc_id
   lambda_package_type                       = "Zip"
   source                                    = "./lambda"
+  subnet_ids                                = module.vpc_module.subnet_ids
   lambda_runtime                            = "python3.9"
   lambda_handler                            = "lambda.lambda_handler"
   lambda_function_name                      = "lambda_efs_writer"
@@ -64,5 +64,14 @@ module "lambda_module" {
         "elasticfilesystem:ClientMount", "elasticfilesystem:ClientWrite", "elasticfilesystem:DescribeMountTargets"
       ]),
       resources = tolist(["*"])
-    }]
+    },
+    {
+      effect  = "Allow"
+      actions = tolist([
+        "ec2:DescribeNetworkInterfaces", "ec2:CreateNetworkInterface", "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances", "ec2:AttachNetworkInterface"
+      ])
+      resources = tolist(["*"])
+    }
+  ]
 }

@@ -38,3 +38,7 @@ variable "vpc_id" {
 variable "efs_access_point_name" {
   default = "EFS access point name"
 }
+
+variable "subnet_ids" {
+  description = "Subnet IDS"
+}

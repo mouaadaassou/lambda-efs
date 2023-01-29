@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 module "efs" {
-  source               = "./efs"
+  source               = "efs"
   vpc_cidr_block       = "10.0.0.0/16"
   instance_tenancy     = "default"
   enable_dns_hostnames = true
@@ -30,7 +30,7 @@ module "efs" {
 }
 
 module "lambda" {
-  source = "./lambda"
+  source = "lambda"
   vpc_cidr_block       = "192.168.0.0/16"
   instance_tenancy     = "default"
   enable_dns_hostnames = true

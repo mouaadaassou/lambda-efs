@@ -28,6 +28,10 @@ variable "efs_dns_name" {
   description = "DNS name of the EFS to mount to the EFS instance"
 }
 
+variable "subnet_ids" {
+  description = "Subnet IDS"
+}
+
 variable "ec2_associate_public_ip_address" {
   type = bool
   description = "the SSH key name"
